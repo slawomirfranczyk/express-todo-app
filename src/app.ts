@@ -1,4 +1,5 @@
 import express from 'express';
+import {MySQL} from './db/MySQL';
 
 const app = express()
   .use(express.json())
@@ -6,6 +7,9 @@ const app = express()
     up: true
   }));
 
-app.listen(process.env.APP_PORT, () => {
-  console.log('Server started on port', process.env.APP_PORT);
+MySQL.init().then(async () => {
+  console.log('Successfully initialized MySQL DB!');
+  app.listen(process.env.APP_PORT, () => {
+    console.log('Server started on port', process.env.APP_PORT);
+  });
 });

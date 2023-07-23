@@ -1,28 +1,38 @@
 version: '3.9'
 services:
   app:
+    container_name: express-todo-app
     build:
       context: .
       target: development
-      args:
-        - APP_PORT=${APP_PORT}
+    env_file:
+      - .env.development
     volumes:
       - .:/usr/src/app
-    container_name: express-todo-app
+      - /usr/src/app/node_modules
     restart: always
     ports:
       - '${APP_PORT}:${APP_PORT}'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
+    container_name: todo-app-db
     image: mysql:latest
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=root_password
-      - MYSQL_DATABASE=todo_app_db
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - '3306:3306'
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      timeout: 10s
+      retries: 50
 
 volumes:
   db_data:

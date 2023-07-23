@@ -1,12 +1,10 @@
 FROM node:18.0-alpine as development
 
 ENV NODE_ENV development
-ARG APP_PORT
-ENV APP_PORT $APP_PORT
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json ./
 COPY yarn.lock ./
 COPY src ./src
 
@@ -18,12 +16,10 @@ CMD ["yarn", "dev"]
 FROM node:18.0-alpine as production
 
 ENV NODE_ENV production
-ARG APP_PORT
-ENV APP_PORT $APP_PORT
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json ./
 COPY yarn.lock ./
 COPY dist ./dist
 
